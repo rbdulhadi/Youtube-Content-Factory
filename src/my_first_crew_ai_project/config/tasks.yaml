@@ -1,0 +1,29 @@
+research_task:
+  description: >
+    Conduct a thorough internet search to find promising bachelor thesis topics in the area of Agentic AI.
+    Make sure you find any interesting and relevant information given
+    the current year is {current_year}.
+  expected_output: >
+    A list of 5 topics that were idnetified.
+  agent: research_assistant
+
+#reporting_task:
+#  description: >
+#    ...
+#  expected_output: >
+#    ...
+#  agent: proposal_writer
+
+#ui_task:
+#  description: >
+#    ...
+#  expected_output: >
+#    ...
+#  agent: user_interactor
+
+#find_paper_task:
+#  description: >
+#    ... 
+#  expected_output: >
+#    ...
+#  agent: librarian
