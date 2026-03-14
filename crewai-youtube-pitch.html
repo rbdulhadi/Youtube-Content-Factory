@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrewAI · YouTube Content Factory — Pitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a22;
+      --surface-hover: #1e232e;
+      --border: #2a3142;
+      --text: #e8eaef;
+      --text-muted: #8b92a4;
+      --accent: #00d4aa;
+      --accent-dim: rgba(0, 212, 170, 0.15);
+      --purple: #a78bfa;
+      --purple-dim: rgba(167, 139, 250, 0.15);
+      --orange: #fb923c;
+      --orange-dim: rgba(251, 146, 60, 0.15);
+      --blue: #38bdf8;
+      --blue-dim: rgba(56, 189, 248, 0.15);
+      --pink: #f472b6;
+      --pink-dim: rgba(244, 114, 182, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Pipeline connector */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pipeline-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    .pipeline-line {
+      width: 32px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+      border-radius: 1px;
+    }
+
+    /* Agent cards */
+    .agent-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--border);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .agent-card:nth-child(1) { border-left: 4px solid var(--accent); }
+    .agent-card:nth-child(2) { border-left: 4px solid var(--purple); }
+    .agent-card:nth-child(3) { border-left: 4px solid var(--orange); }
+    .agent-card:nth-child(4) { border-left: 4px solid var(--blue); }
+    .agent-card:nth-child(5) { border-left: 4px solid var(--pink); }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .agent-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 500;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .agent-card:nth-child(1) .agent-number { background: var(--accent-dim); color: var(--accent); }
+    .agent-card:nth-child(2) .agent-number { background: var(--purple-dim); color: var(--purple); }
+    .agent-card:nth-child(3) .agent-number { background: var(--orange-dim); color: var(--orange); }
+    .agent-card:nth-child(4) .agent-number { background: var(--blue-dim); color: var(--blue); }
+    .agent-card:nth-child(5) .agent-number { background: var(--pink-dim); color: var(--pink); }
+
+    .agent-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .agent-role {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.2rem;
+    }
+
+    .agent-task {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .agent-task strong {
+      color: var(--text);
+    }
+
+    .output-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .output-value {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-note {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-note span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 2rem 1rem; }
+      .agent-card { padding: 1.25rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">CrewAI · Educational Project</span>
+      <h1>YouTube Content Factory</h1>
+      <p class="subtitle">Fünf Agenten, fünf Aufgaben — von der Trend-Recherche bis zum fertigen Metadaten-Paket. Ein durchgängiger Workflow für edukative Videos.</p>
+    </header>
+
+    <div class="pipeline">
+      <span class="pipeline-dot"></span>
+      <span class="pipeline-line"></span>
+      <span class="pipeline-dot"></span>
+      <span class="pipeline-line"></span>
+      <span class="pipeline-dot"></span>
+      <span class="pipeline-line"></span>
+      <span class="pipeline-dot"></span>
+      <span class="pipeline-line"></span>
+      <span class="pipeline-dot"></span>
+    </div>
+
+    <div class="agent-grid">
+      <article class="agent-card">
+        <div class="agent-header">
+          <span class="agent-number">01</span>
+          <div>
+            <div class="agent-title">Der Trend-Scout</div>
+            <div class="agent-role">Rolle: Market Researcher</div>
+          </div>
+        </div>
+        <p class="agent-task"><strong>Aufgabe:</strong> Die 5 meistgestellten Fragen zu [Thema] in Foren und Social Media identifizieren.</p>
+        <div class="output-label">Output</div>
+        <div class="output-value">Eine Liste von 5 konkreten Pain Points oder Fragen.</div>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-header">
+          <span class="agent-number">02</span>
+          <div>
+            <div class="agent-title">Der Kreativ-Strateg:in</div>
+            <div class="agent-role">Rolle: Content Creator</div>
+          </div>
+        </div>
+        <p class="agent-task"><strong>Aufgabe:</strong> Die beste Frage aus der Scout-Liste wählen und einen „Hook“ sowie einen einzigartigen „Angle“ für ein 10-Minuten-Video entwickeln.</p>
+        <div class="output-label">Output</div>
+        <div class="output-value">Ein Titel und eine „Big Idea“ in 3 Sätzen.</div>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-header">
+          <span class="agent-number">03</span>
+          <div>
+            <div class="agent-title">Der Scriptwriter</div>
+            <div class="agent-role">Rolle: Technical Writer</div>
+          </div>
+        </div>
+        <p class="agent-task"><strong>Aufgabe:</strong> Die „Big Idea“ in ein strukturiertes Skript umsetzen: Intro, 3 Hauptpunkte und Call-to-Action (CTA).</p>
+        <div class="output-label">Output</div>
+        <div class="output-value">Ein vollständiges Video-Skript.</div>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-header">
+          <span class="agent-number">04</span>
+          <div>
+            <div class="agent-title">Der Visual Director</div>
+            <div class="agent-role">Rolle: Art Director</div>
+          </div>
+        </div>
+        <p class="agent-task"><strong>Aufgabe:</strong> Das Skript lesen und für jeden Abschnitt beschreiben, was auf dem Bildschirm zu sehen sein soll (z. B. „B-Roll eines Waldes“, „Text-Overlay mit dem Wort ‚Effizienz‘“).</p>
+        <div class="output-label">Output</div>
+        <div class="output-value">Ein visuelles Storyboard mit Zeitstempeln zum Skript.</div>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-header">
+          <span class="agent-number">05</span>
+          <div>
+            <div class="agent-title">Der SEO-Manager</div>
+            <div class="agent-role">Rolle: Digital Growth Expert</div>
+          </div>
+        </div>
+        <p class="agent-task"><strong>Aufgabe:</strong> Skript und Storyboard prüfen und einen CTR-optimierten Titel, eine Beschreibung sowie 10 optimierte Tags erzeugen.</p>
+        <div class="output-label">Output</div>
+        <div class="output-value">Ein vollständiges „Metadaten-Paket“ für den Video-Upload.</div>
+      </article>
+    </div>
+
+    <footer>
+      <p class="footer-note">Educational Project · <span>CrewAI</span> · 5 Agents, 1 Pipeline</p>
+    </footer>
+  </div>
+</body>
+</html>
