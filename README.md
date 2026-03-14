@@ -10,15 +10,17 @@ Step-by-step build instructions (adapted for this project) are in the **[Instruc
 
 ## Work Steps (Build the 5 Agents)
 
-Follow the instruction phases and apply them to the YouTube Content Factory pipeline below.
+Follow the instruction phases in the table below. Each phase links to a copy-paste-ready file in this repo.
 
-| Phase | Instruction file | What to do for our 5 agents |
-|-------|-------------------|-----------------------------|
-| **1** | `Phase_1 Intro.md` | Understand: multi-agent system, tool use (custom + existing), MCP. Our goal: 5 agents in sequence from trend research → metadata package. |
-| **2** | `Phase_2 Build First Crew.md` | **Setup:** Create/use CrewAI project. **Agents:** In `config/agents.yaml` define: Trend Scout, Creative Strategist, Scriptwriter, Visual Director, SEO Manager (roles/goals/backstories from pitch). **Tasks:** In `config/tasks.yaml` define 5 tasks (see table below), each assigned to one agent; use `context` so each task gets the previous agent’s output. **Crew:** In `crew.py` register all 5 agents and 5 tasks with `@agent` / `@task`, and create the `Crew` with sequential process. |
-| **3** | `Phase_3 Tool Calling.md` | **Custom tool(s):** e.g. read topic or research areas from a JSON/file. Implement tool, register in `crew.py`, assign to **Trend Scout**. In `main.py` pass input (e.g. `topic`, `path`). In the Trend Scout task description, reference `{topic}` or `{path}` so the agent uses the tool. |
-| **4** | `Phase_4 CrewAI Web Serach Integration.md` | **Web search:** Install `crewai[tools]`, add Serper (or similar) and `SERPER_API_KEY` in `.env`. Give **Trend Scout** the web search tool so it can find the 5 most-asked questions/pain points in forums and social media. Optionally use `output_file` on tasks to save: trend list, big idea, script, storyboard, metadata (e.g. `output/trend_list.md`, `output/script.md`, etc.). |
-| **5** | `Phase_5 MCP Integration.md` | **MCP (optional):** If you need extra data (e.g. search YouTube, external APIs), add an MCP server and expose its tools. Create an adapter in `mcp/mcp_server.py`, load tools in `crew.py`, and assign to the agent that needs them (e.g. Trend Scout or a dedicated agent). Otherwise treat as future extension. |
+| Phase | Instruction | What to do for our 5 agents |
+|-------|-------------|-----------------------------|
+| **1** | [Phase_1_Intro.md](Instructions/Phase_1_Intro.md) | Understand: multi-agent system, tool use (custom + existing), MCP. Our goal: 5 agents in sequence from trend research → metadata package. |
+| **2** | [Phase_2_Build_First_Crew.md](Instructions/Phase_2_Build_First_Crew.md) | **Setup:** Create/use CrewAI project. **Agents:** In `config/agents.yaml` define: Trend Scout, Creative Strategist, Scriptwriter, Visual Director, SEO Manager (roles/goals/backstories from pitch). **Tasks:** In `config/tasks.yaml` define 5 tasks (see table below), each assigned to one agent; use `context` so each task gets the previous agent’s output. **Crew:** In `crew.py` register all 5 agents and 5 tasks with `@agent` / `@task`, and create the `Crew` with sequential process. |
+| **3** | [Phase_3_Tool_Calling.md](Instructions/Phase_3_Tool_Calling.md) | **Custom tool(s):** e.g. read topic or research areas from a JSON/file. Implement tool, register in `crew.py`, assign to **Trend Scout**. In `main.py` pass input (e.g. `topic`, `path`). In the Trend Scout task description, reference `{topic}` or `{path}` so the agent uses the tool. |
+| **4** | [Phase_4_Web_Search_Integration.md](Instructions/Phase_4_Web_Search_Integration.md) | **Web search:** Install `crewai[tools]`, add Serper (or similar) and `SERPER_API_KEY` in `.env`. Give **Trend Scout** the web search tool so it can find the 5 most-asked questions/pain points in forums and social media. Optionally use `output_file` on tasks to save: trend list, big idea, script, storyboard, metadata (e.g. `output/trend_list.md`, `output/script.md`, etc.). |
+| **5** | [Phase_5_MCP_Integration.md](Instructions/Phase_5_MCP_Integration.md) | **MCP (optional):** Add an MCP server (e.g. arXiv or YouTube) and assign its tools to an agent for extra data. |
+
+Full index: [Instructions/README.md](Instructions/README.md).
 
 ### Task–agent mapping (from the pitch)
 
