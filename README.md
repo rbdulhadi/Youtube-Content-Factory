@@ -4,39 +4,88 @@ CrewAI-powered YouTube content pipeline. Five agents, five tasks — from trend 
 
 **Team:** Abdulhadi Rajeh, Alnahas Khaled, Abdulhadi Raja
 
-Step-by-step build instructions (adapted for this project) are in the **[Instructions](Instructions/)** folder. Follow them in order to implement the 5-agent pipeline.
+---
+
+## 🚀 Setup from Scratch
+
+Follow these steps to get the YouTube Content Factory running on your local machine.
+
+### 1. Prerequisites
+- **Python:** 3.10, 3.11, or 3.12
+- **UV:** Fast Python package installer and resolver.
+  ```bash
+  pip install uv
+  ```
+- **Ollama:** Running locally for LLM and Embeddings.
+
+### 2. Local LLM Setup (Ollama)
+This project is configured to use **Ollama** for both the LLM and the embedding model to ensure privacy and low cost.
+
+1. **Install Ollama:** Download and install from [ollama.com](https://ollama.com/).
+2. **Pull the required models:**
+   ```bash
+   # Pull the LLM (Kimi-k2.5 cloud version via Ollama)
+   ollama pull kimi-k2.5:cloud
+
+   # Pull the Embedding model
+   ollama pull nomic-embed-text
+   ```
+3. **Ensure Ollama is running:** The API is usually available at `http://localhost:11434`.
+
+### 3. Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd Youtube-Content-Factory
+   ```
+
+2. **Install dependencies using CrewAI CLI:**
+   ```bash
+   crewai install
+   ```
+
+### 4. Configuration (.env)
+
+Create a `.env` file in the project root (or update the existing one) with the following variables:
+
+```env
+# LLM Configuration
+MODEL=ollama/kimi-k2.5:cloud
+BASE_URL=http://localhost:11434
+OLLAMA_API_KEY=NA  # Set to NA for local Ollama usage
+
+# Embedding Configuration
+EMBEDDING_MODEL=nomic-embed-text
+
+# Tools Configuration
+YOUTUBE_API_KEY=your_youtube_api_key_here
+ENABLE_MCP_TOOLS=true
+CREWAI_TRACING_ENABLED=true
+
+# Optional: If you want to use OpenAI instead
+# OPENAI_API_KEY=sk-...
+```
 
 ---
 
-## Work Steps (Build the 5 Agents)
+## 🛠 Tools Used
 
-Follow the instruction phases in the table below. Each phase links to a copy-paste-ready file in this repo.
+The crew leverages several powerful tools to automate the research and content creation process:
 
-| Phase | Instruction | What to do for our 5 agents |
-|-------|-------------|-----------------------------|
-| **1** | [Phase_1_Intro.md](Instructions/Phase_1_Intro.md) | Understand: multi-agent system, tool use (custom + existing), MCP. Our goal: 5 agents in sequence from trend research → metadata package. |
-| **2** | [Phase_2_Build_First_Crew.md](Instructions/Phase_2_Build_First_Crew.md) | **Setup:** Create/use CrewAI project. **Agents:** In `config/agents.yaml` define: Trend Scout, Creative Strategist, Scriptwriter, Visual Director, SEO Manager (roles/goals/backstories from pitch). **Tasks:** In `config/tasks.yaml` define 5 tasks (see table below), each assigned to one agent; use `context` so each task gets the previous agent’s output. **Crew:** In `crew.py` register all 5 agents and 5 tasks with `@agent` / `@task`, and create the `Crew` with sequential process. |
-| **3** | [Phase_3_Tool_Calling.md](Instructions/Phase_3_Tool_Calling.md) | **Custom tool(s):** e.g. read topic or research areas from a JSON/file. Implement tool, register in `crew.py`, assign to **Trend Scout**. In `main.py` pass input (e.g. `topic`, `path`). In the Trend Scout task description, reference `{topic}` or `{path}` so the agent uses the tool. |
-| **4** | [Phase_4_Web_Search_Integration.md](Instructions/Phase_4_Web_Search_Integration.md) | **Web search:** Install `crewai[tools]`, add Serper (or similar) and `SERPER_API_KEY` in `.env`. Give **Trend Scout** the web search tool so it can find the 5 most-asked questions/pain points in forums and social media. Optionally use `output_file` on tasks to save: trend list, big idea, script, storyboard, metadata (e.g. `output/trend_list.md`, `output/script.md`, etc.). |
-| **5** | [Phase_5_MCP_Integration.md](Instructions/Phase_5_MCP_Integration.md) | **MCP (optional):** Add an MCP server (e.g. arXiv or YouTube) and assign its tools to an agent for extra data. |
-
-Full index: [Instructions/README.md](Instructions/README.md).
-
-### Task–agent mapping (from the pitch)
-
-Task names, descriptions, and outputs below match the 5 agents in `crewai-youtube-pitch.html`.
-
-| Step | Task (in `tasks.yaml`) | Agent | Description | Expected output |
-|------|------------------------|--------|-------------|-----------------|
-| 1 | `trend_scout_task` | Trend Scout | Find the 5 most-asked questions about [topic] in forums and social media. | A list of 5 concrete pain points or questions. |
-| 2 | `creative_strategist_task` | Creative Strategist | Pick the best question from the scout list; develop a hook and unique angle for a ~10 min video. | A title and a “Big Idea” in 3 sentences. |
-| 3 | `scriptwriter_task` | Scriptwriter | Turn the Big Idea into a structured script: intro, 3 main points, call-to-action (CTA). | A full video script. |
-| 4 | `visual_director_task` | Visual Director | For each section of the script, describe what should appear on screen (e.g. B-roll, text overlays). | A visual storyboard with timestamps. |
-| 5 | `seo_manager_task` | SEO Manager | Review script and storyboard; produce a CTR-optimized title, description, and 10 tags. | A complete metadata package for the video upload. |
+1.  **ScrapeWebsiteTool (CrewAI Native):** Used by the **Trend Scout** to read content from forums and social media pages.
+2.  **MCP YouTube Tools:**
+    - Integrated via `MCPServerAdapter`.
+    - Allows the agents to search for trending videos and analyze successful content patterns directly on YouTube.
+    - Requires `mcp-youtube` to be installed: `uv tool install git+https://github.com/sparfenyuk/mcp-youtube`.
+3.  **RAG Tool (Custom Ollama RAG):**
+    - A custom RAG (Retrieval-Augmented Generation) tool configured to work with the local Ollama instance for script research and user preference grounding.
 
 ---
 
-## The Pipeline
+## 🤖 The Pipeline
+
+The **YouTube Content Factory** consists of five specialized agents working in a sequential process:
 
 | # | Agent | Role | Output |
 |---|--------|------|--------|
@@ -48,33 +97,7 @@ Task names, descriptions, and outputs below match the 5 agents in `crewai-youtub
 
 ---
 
-## Installation
-
-Ensure you have Python >=3.10, <3.14 installed. This project uses [UV](https://docs.astral.sh/uv/) for dependency management.
-
-1. Install uv (if needed):
-
-```bash
-pip install uv
-```
-
-2. From the project root, install dependencies:
-
-```bash
-crewai install
-```
-
-### Configuration
-
-- **Add your `OPENAI_API_KEY`** in the `.env` file.
-- Agents: `src/my_first_crew_ai_project/config/agents.yaml`
-- Tasks: `src/my_first_crew_ai_project/config/tasks.yaml`
-- Crew logic & tools: `src/my_first_crew_ai_project/crew.py`
-- Inputs: `src/my_first_crew_ai_project/main.py`
-
----
-
-## Running the Project
+## 🏃 Running the Project
 
 From the project root:
 
@@ -82,19 +105,22 @@ From the project root:
 crewai run
 ```
 
-This starts the YouTube Content Factory crew: agents run in sequence and produce the trend list → big idea → script → storyboard → metadata package.
+This starts the pipeline: agents run in sequence and produce artifacts in the `output/` directory (e.g., `trend_list.md`, `script.md`, `metadata.md`).
 
 ---
 
-## Understanding Your Crew
+## 📂 Project Structure
 
-The **YouTube Content Factory** crew is made of five agents that work in sequence. Each agent consumes the previous output and produces the next artifact. Task flow and agent roles are defined in `config/tasks.yaml` and `config/agents.yaml`. The high-level idea is also described in `crewai-youtube-pitch.html`.
+- `src/my_first_crew_ai_project/config/agents.yaml`: Agent definitions.
+- `src/my_first_crew_ai_project/config/tasks.yaml`: Task definitions.
+- `src/my_first_crew_ai_project/crew.py`: Crew orchestration and tool registration.
+- `src/my_first_crew_ai_project/main.py`: Entry point and inputs.
+- `src/my_first_crew_ai_project/mcp/`: MCP server integration.
+- `src/my_first_crew_ai_project/rag/`: RAG and Ollama configuration.
 
 ---
 
-## Support
+## 🤝 Support
 
 - [CrewAI documentation](https://docs.crewai.com)
-- [CrewAI GitHub](https://github.com/joaomdmoura/crewai)
-- [CrewAI Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with docs](https://chatg.pt/DWjSBZn)
+- [Ollama documentation](https://github.com/ollama/ollama)

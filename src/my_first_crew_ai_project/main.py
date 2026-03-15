@@ -2,9 +2,10 @@
 import sys
 import warnings
 
+import os
 from datetime import datetime
 
-from my_first_crew_ai_project.crew import MyFirstCrewAiProject
+from my_first_crew_ai_project.crew import MyYouTubeContentCreatorAiCrew
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -23,9 +24,9 @@ def run():
     }
 
     try:
-        MyFirstCrewAiProject().crew().kickoff(inputs=inputs)
+        MyYouTubeContentCreatorAiCrew().crew().kickoff(inputs=inputs)
     except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
+        print(f"An error occurred while running the crew: {e}")
 
 
 def train():
@@ -37,7 +38,7 @@ def train():
         'current_year': str(datetime.now().year)
     }
     try:
-        MyFirstCrewAiProject().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
+        MyYouTubeContentCreatorAiCrew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
@@ -47,7 +48,7 @@ def replay():
     Replay the crew execution from a specific task.
     """
     try:
-        MyFirstCrewAiProject().crew().replay(task_id=sys.argv[1])
+        MyYouTubeContentCreatorAiCrew().crew().replay(task_id=sys.argv[1])
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
@@ -62,7 +63,7 @@ def test():
     }
 
     try:
-        MyFirstCrewAiProject().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
+        MyYouTubeContentCreatorAiCrew().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
 
     except Exception as e:
         raise Exception(f"An error occurred while testing the crew: {e}")
@@ -88,7 +89,7 @@ def run_with_trigger():
     }
 
     try:
-        result = MyFirstCrewAiProject().crew().kickoff(inputs=inputs)
+        result = MyYouTubeContentCreatorAiCrew().crew().kickoff(inputs=inputs)
         return result
     except Exception as e:
         raise Exception(f"An error occurred while running the crew with trigger: {e}")

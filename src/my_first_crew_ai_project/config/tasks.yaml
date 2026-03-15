@@ -1,29 +1,43 @@
-research_task:
+trend_scout_task:
   description: >
-    Conduct a thorough internet search to find promising bachelor thesis topics in the area of Agentic AI.
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Research and identify the 5 most-asked questions or pain points about the given topic {topic} by analyzing forums, social media platforms, and online communities. Use web search tools to gather real user conversations and questions. Focus on finding concrete, specific questions that indicate genuine audience need and interest.
   expected_output: >
-    A list of 5 topics that were idnetified.
-  agent: research_assistant
+    A list of 5 concrete pain points or questions related to the topic, each clearly stated and backed by evidence from online sources. The list should be formatted with bullet points and include brief context about where each question/pain point was identified.
+  agent: trend_scout
 
-#reporting_task:
-#  description: >
-#    ...
-#  expected_output: >
-#    ...
-#  agent: proposal_writer
+creative_strategist_task:
+  description: >
+    Review the list of questions provided by the Trend Scout and select the single best question that has the highest potential for engaging content. Develop a compelling hook and unique angle for a ~15 minute educational video. Create a "Big Idea" that will resonate with the target audience and make them want to watch. Consider what makes this topic clickable while maintaining educational value.
+  expected_output: >
+    A video title and a "Big Idea" summary in 3 sentences that clearly articulates the hook, unique angle, and value proposition for the viewer. The output should be compelling and set up the foundation for the script.
+  agent: creative_strategist
+  context:
+    - trend_scout_task
 
-#ui_task:
-#  description: >
-#    ...
-#  expected_output: >
-#    ...
-#  agent: user_interactor
+scriptwriter_task:
+  description: >
+    Transform the Big Idea into a complete, structured video script suitable for a ~15 minute educational video. Structure the script with a strong intro that hooks the viewer, 3 main points that deliver on the promise of the title, and a call-to-action (CTA) that encourages engagement. Ensure the script is conversational, clear, and maintains viewer interest throughout. Include timing suggestions for each section.
+  expected_output: >
+    A full video script with clearly marked sections: Introduction (hook), Main Point 1, Main Point 2, Main Point 3, and Call-to-Action. Each section should include the spoken content and approximate timing. The script should be ready for a content creator to read and record.
+  agent: scriptwriter
+  context:
+    - creative_strategist_task
 
-#find_paper_task:
-#  description: >
-#    ... 
-#  expected_output: >
-#    ...
-#  agent: librarian
+visual_director_task:
+  description: >
+    Analyze the completed script and create a detailed visual storyboard that describes what should appear on screen for each section. Specify B-roll suggestions, text overlays, graphics, animations, on-screen examples, and any other visual elements that will enhance viewer engagement and comprehension. Include timestamp references that align with the script sections.
+  expected_output: >
+    A visual storyboard with timestamps that maps to each section of the script. For each timestamp/section, provide detailed descriptions of visual elements including: B-roll footage ideas, text overlays, graphics/animations needed, on-screen examples, and transitions. The storyboard should be detailed enough for a video editor to execute.
+  agent: visual_director
+  context:
+    - scriptwriter_task
+
+seo_manager_task:
+  description: >
+    Review the complete script and visual storyboard to create optimized YouTube metadata that will maximize discoverability and click-through rate. Generate a compelling, CTR-optimized title (different from or refined version of the working title), a detailed video description that includes key points and timestamps, and 10 relevant tags that will help the video appear in search results and recommendations. Ensure all metadata accurately represents the content while being optimized for the YouTube algorithm.
+  expected_output: >
+    A complete metadata package formatted for YouTube upload, including: (1) Final video title optimized for CTR, (2) Full video description with key points and timestamp chapters, (3) List of 10 relevant tags. The package should be ready to copy-paste into YouTube's upload interface.
+  agent: seo_manager
+  context:
+    - scriptwriter_task
+    - visual_director_task
