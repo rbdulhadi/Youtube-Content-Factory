@@ -5,55 +5,23 @@ import subprocess
 import logging
 
 
-def can_start_mcp_youtube() -> bool:
+def can_start_mcp() -> bool:
     """
-    Check if mcp-youtube tool is available and runnable.
+    Check if MCP is enabled and any server can be started.
 
     Returns:
-        bool: True if mcp-youtube can be started, False otherwise
+        bool: True if MCP tools can be loaded, False otherwise
     """
     logger = logging.getLogger(__name__)
-    logger.info("Checking if mcp-youtube is available...")
-
+    
     # Check if MCP is enabled via environment variable
     mcp_enabled = os.getenv('MCP_ENABLED', 'true').lower() == 'true'
-    logger.info(f"MCP_ENABLED environment variable: {os.getenv('MCP_ENABLED', 'true')} (evaluated as: {mcp_enabled})")
-
+    
     if not mcp_enabled:
         logger.warning("MCP is disabled via MCP_ENABLED environment variable")
         return False
-
-    # Check if mcp-youtube command is available
-    logger.info("Running command: uv tool run mcp-youtube --help")
-    try:
-        check = subprocess.run(
-            ["uv", "tool", "run", "mcp-youtube", "--help"],
-            capture_output=True,
-            text=True,
-            timeout=8,
-            check=False,
-        )
-
-        logger.info(f"Command exit code: {check.returncode}")
-
-        if check.returncode == 0:
-            logger.info("✓ mcp-youtube is available and runnable")
-            return True
-        else:
-            details = (check.stderr or check.stdout).strip().splitlines()
-            reason = details[0] if details else "unknown startup failure"
-            logger.warning(
-                "mcp-youtube is not runnable (%s). MCP tools disabled.",
-                reason,
-            )
-            return False
-
-    except Exception as exc:
-        logger.warning(
-            "Could not verify mcp-youtube startup (%s). MCP tools disabled.",
-            exc,
-        )
-        return False
+    
+    return True
 
 
 def get_mcp_tools():
@@ -74,39 +42,51 @@ def get_mcp_tools():
     - arXiv MCP server (for academic research)
     - Web search MCP server
     - Other content discovery servers
+    
+    To build your own MCP server:
+    1. Create a Python file (e.g., `local_mcp_server.py`) using the `mcp` SDK.
+    2. Define your tools and logic within that file.
+    3. Add it to the `server_params` list in `get_mcp_tools()`.
     """
     logger = logging.getLogger(__name__)
     logger.info("Initializing MCP tools...")
 
+    # Create server parameters
+    server_params = []
+
+    # 1. Add YouTube MCP server (remote tool)
     youtube_api_key = os.getenv('YOUTUBE_API_KEY')
-    if not youtube_api_key:
-        logger.error("YOUTUBE_API_KEY not found in environment variables")
-        raise ValueError("YOUTUBE_API_KEY not found in environment variables")
-
-    logger.info("✓ YOUTUBE_API_KEY found")
-    logger.info("Creating MCP server parameters for: uv tool run mcp-youtube run")
-
-    server_params = [
-        StdioServerParameters(
-            command="uv",
-            args=["tool", "run", "mcp-youtube", "run"],
-            env={"YOUTUBE_API_KEY": youtube_api_key}
+    if youtube_api_key:
+        logger.info("✓ YOUTUBE_API_KEY found. Adding YouTube MCP server.")
+        server_params.append(
+            StdioServerParameters(
+                command="uv",
+                args=["tool", "run", "mcp-youtube", "run"],
+                env={"YOUTUBE_API_KEY": youtube_api_key}
+            )
         )
-        # Add more MCP servers here if needed
-        # Example for arXiv (educational research):
-        # StdioServerParameters(
-        #     command="uv",
-        #     args=[
-        #         "tool",
-        #         "run",
-        #         "arxiv-mcp-server",
-        #         "--storage-path",
-        #         "./papers",
-        #     ],
-        # )
-    ]
+    else:
+        logger.warning("YOUTUBE_API_KEY not found. Skipping YouTube MCP server.")
 
-    logger.info("Creating MCPServerAdapter...")
+    # 2. Add our own local MCP server
+    logger.info("Adding local MCP server...")
+    # Get the absolute path to our local server file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    local_server_path = os.path.join(current_dir, "local_mcp_server.py")
+    
+    server_params.append(
+        StdioServerParameters(
+            command="python",
+            args=[local_server_path],
+            env=os.environ.copy()
+        )
+    )
+
+    if not server_params:
+        logger.error("No MCP servers configured")
+        return []
+
+    logger.info(f"Creating MCPServerAdapter with {len(server_params)} servers...")
     adapter = MCPServerAdapter(server_params)
     logger.info(f"✓ MCPServerAdapter created successfully with {len(adapter.tools)} tools")
 
@@ -131,7 +111,7 @@ def get_trend_scout_tools():
     tools = [ScrapeWebsiteTool()]
     logger.info("✓ Added ScrapeWebsiteTool to tools list")
 
-    if not can_start_mcp_youtube():
+    if not can_start_mcp():
         logger.warning("⚠ MCP disabled - using ScrapeWebsiteTool only")
         logger.info(f"Total tools available: {len(tools)}")
         logger.info("=" * 60)

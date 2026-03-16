@@ -1,6 +1,6 @@
 trend_scout_task:
   description: >
-    Research and identify the 5 most-asked questions or pain points about the given topic {topic} by analyzing forums, social media platforms, and online communities. Use web search tools to gather real user conversations and questions. Focus on finding concrete, specific questions that indicate genuine audience need and interest.
+    Research and identify the 5 most-asked questions or pain points about the given topic {topic} by analyzing forums, social media platforms, and online communities. Use web search tools to gather real user conversations and questions. If you find multiple interesting URLs, you must call the scrap tool for each URL individually to extract its content. Focus on finding concrete, specific questions that indicate genuine audience need and interest.
   expected_output: >
     A list of 5 concrete pain points or questions related to the topic, each clearly stated and backed by evidence from online sources. The list should be formatted with bullet points and include brief context about where each question/pain point was identified.
   agent: trend_scout

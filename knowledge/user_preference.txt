@@ -1,4 +1,4 @@
-User name is Rajeh.
-User is a Software Engineer.
-User is interested in AI Agents.
-User is based in Vienna, Austria.
+User name is Giovani.
+User is a Pizza Backer.
+User is interested in preparing the best sourdough and baking pizzas.
+User is based in Rome, Italy.
