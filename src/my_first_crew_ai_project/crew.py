@@ -1,17 +1,27 @@
+
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
+from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from .mcp.mcp_server import get_trend_scout_tools
 import os
 
 @CrewBase
-class MyYouTubeContentCreatorAiCrew():
+class MyYouTubeContentCreatorAiCrew:
     """My YouTube Content Creator Ai Crew"""
 
     agents: list[BaseAgent]
     agents_config = "config/agents.yaml"
     tasks: list[Task]
     tasks_config = "config/tasks.yaml"
+
+    @staticmethod
+    def _embedder_url() -> str:
+        configured_url = os.getenv("EMBEDDING_BASE_URL")
+        if configured_url:
+            return configured_url
+        base_url = os.getenv("BASE_URL", "http://localhost:11434").rstrip("/")
+        return f"{base_url}/api/embeddings"
 
     local_llm = LLM(
             model=os.getenv('MODEL', 'ollama/kimi-k2.5:cloud'),
@@ -106,10 +116,22 @@ class MyYouTubeContentCreatorAiCrew():
         # To learn how to add knowledge sources to your crew, check out the documentation:
         # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 
+        user_preference = TextFileKnowledgeSource(
+            file_paths=["user_preference.txt"]
+        )
+
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
             memory=False,
+            knowledge_sources=[user_preference],
+            embedder={
+                "provider": "ollama",
+                "config": {
+                    "model_name": os.getenv("EMBEDDING_MODEL", "nomic-embed-text"),
+                    "url": self._embedder_url(),
+                },
+            },
         )
