@@ -11,12 +11,12 @@ CrewAI-powered YouTube content pipeline. Five agents, five tasks — from trend 
 Follow these steps to get the YouTube Content Factory running on your local machine.
 
 ### 1. Prerequisites
-- **Python:** 3.10, 3.11, or 3.12
-- **UV:** Fast Python package installer and resolver.
+- **Python:** 3.10, 3.11, 3.12, or 3.13 (see `pyproject.toml`)
+- **UV:** Fast Python package installer and resolver (recommended).
   ```bash
   pip install uv
   ```
-- **Ollama:** Running locally for LLM and Embeddings.
+- **Ollama:** Running locally for LLM and embeddings.
 
 ### 2. Local LLM Setup (Ollama)
 This project is configured to use **Ollama** for both the LLM and the embedding model to ensure privacy and low cost.
@@ -40,10 +40,11 @@ This project is configured to use **Ollama** for both the LLM and the embedding 
    cd Youtube-Content-Factory
    ```
 
-2. **Install dependencies using CrewAI CLI:**
+2. **Install dependencies:**
    ```bash
-   crewai install
+   uv sync
    ```
+   Or use the CrewAI CLI: `crewai install`
 
 ### 4. Configuration (.env)
 
@@ -58,9 +59,9 @@ OLLAMA_API_KEY=NA  # Set to NA for local Ollama usage
 # Embedding Configuration
 EMBEDDING_MODEL=nomic-embed-text
 
-# Tools Configuration
+# Tools & MCP
 YOUTUBE_API_KEY=your_youtube_api_key_here
-ENABLE_MCP_TOOLS=true
+MCP_ENABLED=true
 CREWAI_TRACING_ENABLED=true
 
 # Optional: If you want to use OpenAI instead
@@ -69,17 +70,16 @@ CREWAI_TRACING_ENABLED=true
 
 ---
 
-## 🛠 Tools Used
+## 🛠 Tools & Knowledge
 
-The crew leverages several powerful tools to automate the research and content creation process:
+The crew uses the following tools and knowledge sources:
 
-1.  **ScrapeWebsiteTool (CrewAI Native):** Used by the **Trend Scout** to read content from forums and social media pages.
-2.  **MCP YouTube Tools:**
-    - Integrated via `MCPServerAdapter`.
-    - Allows the agents to search for trending videos and analyze successful content patterns directly on YouTube.
-    - Requires `mcp-youtube` to be installed: `uv tool install git+https://github.com/sparfenyuk/mcp-youtube`.
-3.  **RAG Tool (Custom Ollama RAG):**
-    - A custom RAG (Retrieval-Augmented Generation) tool configured to work with the local Ollama instance for script research and user preference grounding.
+1.  **ScrapeWebsiteTool (CrewAI):** Used by the **Trend Scout** to read content from forums and social media (one URL per call).
+2.  **MCP tools (Trend Scout):**
+    - **YouTube MCP server** — search trending videos and analyze content patterns. Requires `YOUTUBE_API_KEY` and:  
+      `uv tool install git+https://github.com/sparfenyuk/mcp-youtube`
+    - **Local MCP server** (`mcp/local_mcp_server.py`) — project info and video metrics (e.g. engagement rate). No extra install.
+3.  **Crew knowledge:** `knowledge/user_preference.txt` is loaded as a **TextFileKnowledgeSource** so all agents can use viewer preferences (e.g. name, interests, location). Embeddings use the Ollama embedder (`nomic-embed-text`) when knowledge is queried.
 
 ---
 
@@ -90,8 +90,8 @@ The **YouTube Content Factory** consists of five specialized agents working in a
 | # | Agent | Role | Output |
 |---|--------|------|--------|
 | 01 | **Trend Scout** | Market Researcher | List of 5 concrete pain points or questions for [topic] (from forums & social) |
-| 02 | **Creative Strategist** | Content Creator | Title + “Big Idea” in 3 sentences (hook & angle for a ~10 min video) |
-| 03 | **Scriptwriter** | Technical Writer | Full video script (intro, 3 main points, CTA) |
+| 02 | **Creative Strategist** | Content Creator | Title + “Big Idea” in 3 sentences (hook & angle for a ~15 min video) |
+| 03 | **Scriptwriter** | Technical Writer | Full video script (intro, 3 main points, CTA; ~15 min) |
 | 04 | **Visual Director** | Art Director | Visual storyboard with timestamps (what appears on screen per section) |
 | 05 | **SEO Manager** | Digital Growth Expert | Complete metadata package (CTR-optimized title, description, 10 tags) |
 
@@ -105,18 +105,18 @@ From the project root:
 crewai run
 ```
 
-This starts the pipeline: agents run in sequence and produce artifacts in the `output/` directory (e.g., `trend_list.md`, `script.md`, `metadata.md`).
+This starts the pipeline: agents run in sequence and produce artifacts in the `output/` directory: `trend_list.md`, `big_idea.md`, `script.md`, `storyboard.md`, `metadata.md`. Default topic in `main.py` is "Sourdough and Pizza Baking"; change the `topic` in `run()` to try other subjects.
 
 ---
 
 ## 📂 Project Structure
 
-- `src/my_first_crew_ai_project/config/agents.yaml`: Agent definitions.
-- `src/my_first_crew_ai_project/config/tasks.yaml`: Task definitions.
-- `src/my_first_crew_ai_project/crew.py`: Crew orchestration and tool registration.
-- `src/my_first_crew_ai_project/main.py`: Entry point and inputs.
-- `src/my_first_crew_ai_project/mcp/`: MCP server integration.
-- `src/my_first_crew_ai_project/rag/`: RAG and Ollama configuration.
+- `src/my_first_crew_ai_project/config/agents.yaml` — Agent definitions (roles, goals, backstories).
+- `src/my_first_crew_ai_project/config/tasks.yaml` — Task definitions and dependencies.
+- `src/my_first_crew_ai_project/crew.py` — Crew class `MyYouTubeContentCreatorAiCrew`, tool wiring, and Ollama LLM/embedder.
+- `src/my_first_crew_ai_project/main.py` — Entry point (`run()`, `train()`, `test()`, `replay()`, `run_with_trigger()`).
+- `src/my_first_crew_ai_project/mcp/` — MCP integration: `mcp_server.py` (YouTube + local MCP), `local_mcp_server.py` (project info, video metrics).
+- `knowledge/user_preference.txt` — Crew knowledge source (viewer preferences) used by all agents.
 
 ---
 
